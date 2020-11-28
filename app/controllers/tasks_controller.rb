@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :edit, :update, :destroy]
   before_action :require_user_logged_in
+  before_action :set_task, only: [:show, :edit, :update, :destroy]
   def index
     if logged_in?
       @task = current_user.tasks.build  # form_with 用
@@ -30,7 +30,6 @@ class TasksController < ApplicationController
   end
 
   def update
-
     if @task.update(task_params)
       flash[:success] = 'Taskは正常に更新されました'
       redirect_to @task
@@ -51,10 +50,14 @@ class TasksController < ApplicationController
   
   def set_task
     @task = Task.find(params[:id])
+    unless @task.user == current_user
+      redirect_to "/"
+    end
   end
 
   
   def task_params
     params.require(:task).permit(:content, :status)
   end
+  
 end
